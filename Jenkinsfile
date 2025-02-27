@@ -2,7 +2,8 @@ pipeline{
     agent any
 
     environment{
-        DOCKER_HUB_CREDENTIALS=credentials('docker-hub-credentials')
+        DOCKER_REGISTRY='errolcostabir'
+        IMAGE_NAME='todo-application-image'
     }
 
     stages{
@@ -18,13 +19,20 @@ pipeline{
         }
         stage('Build Docker Image'){
             steps{
-                sh 'docker build -t ${DOCKER_HUB_CREDENTIALS_USR}/todo-application-image:latest .'
+                script{
+                    docker.withRegistry("https://index.docker.io/v1/",'docker-hub-credentials'){
+                        sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest ."
+                    }
+                }
             }
         }
         stage('Push Docker Image'){
             steps{
-                sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push ${DOCKER_HUB_CREDENTIALS_USR}/todo-application-image:latest'
+                script{
+                    docker.withRegistry("https://index.docker.io/v1/",'docker-hub-credentials'){
+                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                    }
+                }
             }
         }
         stage('Deploy with Docker'){
@@ -34,7 +42,7 @@ pipeline{
         }
         stage('clean workspace'){
             steps{
-                cleanWs()
+                sh 'rm -rf'
             }
         }
     }
