@@ -5,6 +5,7 @@ pipeline{
     environment{
         DOCKER_REGISTRY='errolcostabir'
         IMAGE_NAME='todo-application-image'
+        DOCKER_REPO='todo-application'
     }
 
     stages{
@@ -20,18 +21,15 @@ pipeline{
         }
         stage('Build Docker Image'){
             steps{
-                script{
-                    docker.withRegistry("https://index.docker.io/v1/",'docker-hub-credentials'){
-                        sh "docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest ."
-                    }
-                }
+                sh "docker build -t ${IMAGE_NAME}:latest ."
+                sh "docker tag ${IMAGE_NAME}:lastest ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest"
             }
         }
         stage('Push Docker Image'){
             steps{
                 script{
                     docker.withRegistry("https://index.docker.io/v1/",'docker-hub-credentials'){
-                        sh "docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest"
+                        sh "docker push ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest"
                     }
                 }
             }
