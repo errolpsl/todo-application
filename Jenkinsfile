@@ -22,7 +22,7 @@ pipeline{
         stage('Build Docker Image'){
             steps{
                 sh "docker build -t ${IMAGE_NAME}:latest ."
-                sh "docker tag ${IMAGE_NAME}:lastest ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest"
+                sh "docker tag ${IMAGE_NAME}:latest ${DOCKER_REGISTRY}/${DOCKER_REPO}:latest"
             }
         }
         stage('Push Docker Image'){
